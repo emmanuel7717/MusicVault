@@ -1,20 +1,25 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-// Middleware to parse JSON
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Import routes
-const songsRoutes = require('./routes/songs');
-app.use('/songs', songsRoutes);
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('Welcome to MusicVault - Phase 1');
+app.use('/api/songs', require('./modules/songs/routes'));
+
+
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
-// Start server
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Internal server error' });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🎵 MusicVault backend running at http://localhost:${PORT}`);
 });
