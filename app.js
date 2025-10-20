@@ -21,5 +21,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🎵 MusicVault backend running at http://localhost:${PORT}`);
+  console.log(`MusicVault backend running at http://localhost:${PORT}`);
 });
