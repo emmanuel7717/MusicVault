@@ -1,29 +1,37 @@
+
+
 // bring in express
 const express = require('express');
-const app = express();
-const PORT = 3000; // server runs on this port
+require('dotenv').config(); // load environment variables
+const connectDB = require('./shared/middlewares/connect-db');
 
-// lets app read json data
+const app = express();
+const PORT = process.env.PORT || 3000; // use PORT from .env or default 3000
+
+
+connectDB();
+
 app.use(express.json());
 
-// lets app read form data too
+// Parse URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 
-// main route for songs
-app.use('/api/songs', require('./modules/songs/routes'));
+app.use('/api/songs', require('./modules/songs/routes/song')); // matches your file
 
-// if no route found
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// handles any server error
+
+// Error Handling Middleware
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: 'Internal server error' });
 });
 
-// start the server
+// Start the server
+
 app.listen(PORT, () => {
   console.log(`MusicVault backend running at http://localhost:${PORT}`);
 });
