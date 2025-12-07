@@ -1,8 +1,6 @@
-import axios from "axios";
+import http from "./http";
 
-const API_URL = "http://localhost:3000/api/songs";
-
-export const getSongs = () => axios.get(API_URL);
-export const addSong = (song) => axios.post(API_URL, song);
-export const updateSong = (id, song) => axios.put(`${API_URL}/${id}`, song);
-export const deleteSong = (id) => axios.delete(`${API_URL}/${id}`);
+export const getSongs = () => http.get("/songs");
+export const addSong = (song) => http.post("/songs", song);
+export const updateSong = (id, song) => http.put(`/songs/${id}`, song);
+export const deleteSong = (id) => http.delete(`/songs/${id}`);

@@ -1,57 +1,79 @@
 import React, { useEffect, useState } from "react";
-import { getSongs, deleteSong } from "../api/songApi";
 import { Link } from "react-router-dom";
+import { getSongs, deleteSong } from "../api/songApi";
 
 function Home() {
   const [songs, setSongs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const fetchSongs = async () => {
+  const loadSongs = async () => {
     try {
       setLoading(true);
+      setMessage("");
       const res = await getSongs();
       setSongs(res.data);
-    } catch (error) {
-      console.error("Error fetching songs:", error);
+    } catch (err) {
+      console.log(err);
+      setMessage("Could not load songs.");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    loadSongs();
+  }, []);
+
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this song?")) {
-      try {
-        await deleteSong(id);
-        fetchSongs();
-      } catch (error) {
-        console.error("Error deleting song:", error);
-      }
+    if (!window.confirm("Delete this song?")) return;
+
+    try {
+      await deleteSong(id);
+      setSongs((prev) => prev.filter((s) => s._id !== id));
+      setMessage("Song deleted.");
+    } catch (err) {
+      console.log(err);
+      setMessage("Failed to delete song.");
     }
   };
 
-  useEffect(() => {
-    fetchSongs();
-  }, []);
-
-  if (loading) return <p>Loading songs...</p>;
-
   return (
     <div>
-      <h2>🎵 MusicVault - Home</h2>
-      <Link to="/add">Add New Song</Link>
-      {songs.length === 0 ? (
-        <p>No songs available.</p>
-      ) : (
-        <ul>
-          {songs.map((song) => (
-            <li key={song._id}>
-              {song.title} - {song.artist}{" "}
-              <Link to={`/edit/${song._id}`}>Edit</Link>{" "}
-              <button onClick={() => handleDelete(song._id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+      <h2>All Songs</h2>
+      {message && <p>{message}</p>}
+      {loading && <p>Loading...</p>}
+      {!loading && songs.length === 0 && <p>No songs found.</p>}
+
+      {!loading && songs.length > 0 && (
+        <table style={{ width: "100%" }}>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>Album</th>
+              <th>Genre</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {songs.map((song) => (
+              <tr key={song._id}>
+                <td>{song.title}</td>
+                <td>{song.artist}</td>
+                <td>{song.album}</td>
+                <td>{song.genre}</td>
+                <td>
+                  <Link to={`/edit/${song._id}`}>Edit</Link>{" "}
+                  <button onClick={() => handleDelete(song._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
+
+      <Link to="/add">+ Add Song</Link>
     </div>
   );
 }

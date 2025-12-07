@@ -1,27 +1,98 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import AddSong from "./pages/AddSong";
 import EditSong from "./pages/EditSong";
-import './App.css';
+import Login from "./pages/Login";
+import VerifyOtp from "./pages/VerifyOtp";
+import "./App.css";
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("currentUser");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("pendingEmail");
+    setUser(null);
+  };
+
+  const ProtectedRoute = ({ children }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
+
   return (
     <Router>
       <div className="App">
         <header className="App-header">
-          <h1>🎵 MusicVault</h1>
+          <h1>MusicVault</h1>
           <nav>
-            <Link to="/">Home</Link> |{" "}
-            <Link to="/add">Add Song</Link>
+            <Link to="/">All Songs</Link>{" "}
+            <Link to="/add">Add Song</Link>{" "}
+            {!user && <Link to="/login">Login</Link>}
+            {user && (
+              <>
+                <span style={{ marginLeft: "1rem" }}>Hi, {user.name}</span>
+                <button style={{ marginLeft: "1rem" }} onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            )}
           </nav>
         </header>
 
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/add" element={<AddSong />} />
-            <Route path="/edit/:id" element={<EditSong />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add"
+              element={
+                <ProtectedRoute>
+                  <AddSong />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditSong />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/verify-otp"
+              element={<VerifyOtp onLogin={setUser} />}
+            />
           </Routes>
         </main>
       </div>

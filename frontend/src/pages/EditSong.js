@@ -1,73 +1,131 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getSongs, updateSong } from "../api/songApi";
 
+const emptySong = {
+  title: "",
+  artist: "",
+  album: "",
+  genre: "",
+  duration: "",
+};
+
 function EditSong() {
+  const [song, setSong] = useState(emptySong);
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const { id } = useParams();
   const navigate = useNavigate();
-  const [song, setSong] = useState({ title: "", artist: "" });
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchSong = async () => {
+    const loadSong = async () => {
       try {
+        setLoading(true);
         const res = await getSongs();
-        const songData = res.data.find((s) => s._id === id);
-        if (songData) setSong({ title: songData.title, artist: songData.artist });
+        const found = res.data.find((s) => s._id === id);
+        if (found) {
+          setSong({ ...found, duration: String(found.duration) });
+        } else {
+          setMessage("Song not found.");
+        }
       } catch (err) {
-        console.error(err);
-        setError("Failed to fetch song.");
+        console.log(err);
+        setMessage("Could not load song.");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchSong();
+
+    loadSong();
   }, [id]);
 
   const handleChange = (e) => {
     setSong({ ...song, [e.target.name]: e.target.value });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!song.title) newErrors.title = "Required";
+    if (!song.artist) newErrors.artist = "Required";
+    if (!song.album) newErrors.album = "Required";
+    if (!song.genre) newErrors.genre = "Required";
+    if (!song.duration || isNaN(song.duration))
+      newErrors.duration = "Duration must be a number";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!song.title || !song.artist) {
-      setError("Both title and artist are required!");
-      return;
-    }
+    setMessage("");
+    if (!validate()) return;
 
     try {
-      await updateSong(id, song);
-      navigate("/");
+      const payload = { ...song, duration: Number(song.duration) };
+      await updateSong(id, payload);
+      setMessage("Song updated.");
+      setTimeout(() => navigate("/"), 800);
     } catch (err) {
-      console.error(err);
-      setError("Error updating song.");
+      console.log(err);
+      setMessage("Failed to update song.");
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
       <h2>Edit Song</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {message && <p>{message}</p>}
+
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            name="title"
-            value={song.title}
-            onChange={handleChange}
-            required
-          />
+          <label>
+            Title
+            <input name="title" value={song.title} onChange={handleChange} />
+          </label>
+          {errors.title && <small>{errors.title}</small>}
         </div>
+
         <div>
-          <label>Artist:</label>
-          <input
-            type="text"
-            name="artist"
-            value={song.artist}
-            onChange={handleChange}
-            required
-          />
+          <label>
+            Artist
+            <input name="artist" value={song.artist} onChange={handleChange} />
+          </label>
+          {errors.artist && <small>{errors.artist}</small>}
         </div>
-        <button type="submit">Update Song</button>
+
+        <div>
+          <label>
+            Album
+            <input name="album" value={song.album} onChange={handleChange} />
+          </label>
+          {errors.album && <small>{errors.album}</small>}
+        </div>
+
+        <div>
+          <label>
+            Genre
+            <input name="genre" value={song.genre} onChange={handleChange} />
+          </label>
+          {errors.genre && <small>{errors.genre}</small>}
+        </div>
+
+        <div>
+          <label>
+            Duration
+            <input
+              name="duration"
+              value={song.duration}
+              onChange={handleChange}
+            />
+          </label>
+          {errors.duration && <small>{errors.duration}</small>}
+        </div>
+
+        <button type="submit">Update</button>
       </form>
     </div>
   );
