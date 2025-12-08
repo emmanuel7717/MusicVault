@@ -61,6 +61,7 @@ router.post("/login", loginRules, handleLoginValidation, async (req, res) => {
 
     const msg = `Your login OTP is ${otp}. It will expire in 5 minutes.`;
     await sendEmail(foundUser.email, "Your MusicVault login code", msg);
+    console.log("yoooo, here is the otp: " , otp)
 
     res.json({ message: "OTP has been sent to your email address." });
   } catch (err) {
