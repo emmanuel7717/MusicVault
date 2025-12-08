@@ -1,28 +1,275 @@
-.App {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* ------------- Global reset ------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+/* ------------- Page background & base ------------- */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+  color: #e5e7eb;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------- Header / Navbar ------------- */
 .App-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  padding: 0.9rem 2.2rem;
+  background: rgba(15, 23, 42, 0.96);
+  border-bottom: 1px solid #1f2937;
+  backdrop-filter: blur(10px);
 }
 
-nav a {
-  margin-right: 0.75rem;
+.App-header h1 {
+  font-size: 1.7rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
+
+/* nav links */
+.App-header nav a {
+  margin-left: 1.2rem;
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: #9ca3af;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+}
+
+.App-header nav a:hover {
+  color: #f9fafb;
+  border-color: #6366f1;
+}
+
+/* logout button in header */
+.App-header button {
+  margin-left: 1rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: #ef4444;
+  color: #f9fafb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+
+.App-header button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* ------------- Main layout ------------- */
+main {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* A generic card – use this on forms & content wrappers */
+.card {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 14px;
+  padding: 2rem 2.25rem;
+  border: 1px solid #1f2937;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* small layout helper if you want vertical spacing */
+.section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ------------- Headings & text ------------- */
+h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1.3rem;
+}
+
+p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* ------------- Forms (Login / Register / OTP / AddSong) ------------- */
+
+form {
+  margin-top: 0.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px #6366f1;
+  background: #020617;
+}
+
+/* primary button – used everywhere */
+button,
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.3rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #f9fafb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s ease;
+}
+
+button:hover,
+.btn-primary:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+}
+
+button:active,
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ------------- Messages (errors, success) ------------- */
+
+.error-text {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  font-size: 0.9rem;
+}
+
+.success-text {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  font-size: 0.9rem;
+}
+
+/* ------------- Songs table ------------- */
 
 table {
-  margin-top: 1rem;
+  width: 100%;
   border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.93rem;
 }
 
 th,
 td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+}
+
+thead {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(17, 24, 39, 0.7);
+}
+
+tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+tbody tr:hover {
+  background: rgba(55, 65, 81, 0.8);
+}
+
+th {
+  font-weight: 600;
+  color: #e5e7eb;
+  border-bottom: 1px solid #374151;
+}
+
+td {
+  color: #d1d5db;
+  border-bottom: 1px solid #111827;
+}
+
+/* links inside table (e.g., Edit / Delete) */
+table a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+table a:hover {
+  text-decoration: underline;
+}
+
+/* ------------- Small responsive tweaks ------------- */
+
+@media (max-width: 640px) {
+  .App-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .App-header nav a {
+    margin-left: 0;
+    margin-right: 0.9rem;
+  }
+
+  .card {
+    padding: 1.5rem 1.4rem;
+  }
+
+  main {
+    padding: 1.5rem 1rem 2.5rem;
+  }
 }
